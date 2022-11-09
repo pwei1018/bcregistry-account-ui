@@ -1,0 +1,67 @@
+name: BCREGISTRY ACCOUNT UI CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment (dev/test/prod)"
+        required: true
+        default: "dev"
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  APP_NAME: "bcregistry-account"
+  TAG_NAME: "dev"
+
+jobs:
+  bcregistry-account-cd-by-push:
+    runs-on: ubuntu-20.04
+
+    if: github.event_name == 'push' && github.repository == 'pwei1018/bcregistry-account-ui'
+    environment:
+      name: "dev"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure 1Password Connect
+        uses: 1password/load-secrets-action/configure@v1
+        with:
+          connect-host: ${{ secrets.OP_CONNECT_URL }}
+          connect-token: ${{ secrets.OP_CONNECT_TOKEN }}
+
+      - name: Load secret
+        uses: 1password/load-secrets-action@v1
+        env:
+          SECRET: op://app-cicd/hello-world/secret
+
+
+  bcregistry-account-cd-by-dispatch:
+    runs-on: ubuntu-20.04
+
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'pwei1018/bcregistry-account-ui'
+    environment:
+      name: "${{ github.event.inputs.environment }}"
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set env by input
+        run: |
+          echo "TAG_NAME=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+
+      - name: Configure 1Password Connect
+        uses: 1password/load-secrets-action/configure@v1
+        with:
+          connect-host: ${{ secrets.OP_CONNECT_URL }}
+          connect-token: ${{ secrets.OP_CONNECT_TOKEN }}
+
+      - name: Load secret
+        uses: 1password/load-secrets-action@v1
+        run: |
+          op run --help
