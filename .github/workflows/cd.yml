@@ -31,12 +31,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Configure 1Password Connect
-        uses: 1password/load-secrets-action/configure@v1
-        with:
-          connect-host: ${{ secrets.OP_CONNECT_URL }}
-          connect-token: ${{ secrets.OP_CONNECT_TOKEN }}
-
-      - name: Load secret
+        env:
+          OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_URL }}
+          OP_CONNECT_TOKEN : ${{ secrets.OP_CONNECT_TOKEN }}
         run: |
           curl -sSfo op.zip \
             https://cache.agilebits.com/dist/1P/op2/pkg/v2.0.0/op_linux_amd64_v2.0.0.zip \
