@@ -31,13 +31,13 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Configure 1Password Connect
-        env:
-          OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_URL }}
-          OP_CONNECT_TOKEN : ${{ secrets.OP_CONNECT_TOKEN }}
+
         uses: addnab/docker-run-action@v3
         with:
             image: 1password/op:2
             run: |
+              export OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }}
+              export OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
               pwd
               op read op://API/${{ env.TAG_NAME }}/registries-search-api/REGISTRIES_SEARCH_API_KEY
 
