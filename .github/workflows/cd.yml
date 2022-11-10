@@ -30,9 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: pull 1password image
-        uses: docker://
-
       - name: Configure 1Password Connect
         env:
           OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_URL }}
