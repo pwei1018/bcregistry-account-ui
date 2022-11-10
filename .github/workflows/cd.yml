@@ -39,10 +39,10 @@ jobs:
             run: |
               export OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }}
               export OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
-              pwd
+              cd /var/www
               ls -l
-              op read op://API/${{ env.TAG_NAME }}/registries-search-api/REGISTRIES_SEARCH_API_KEY
-
+              op inject -i ./devops/vaults.env -o .env
+              cat .env
 
   bcregistry-account-cd-by-dispatch:
     runs-on: ubuntu-20.04
