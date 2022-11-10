@@ -30,27 +30,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Get user
+      - name: Get environment variables
+        env:
+          OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_URL }}
+          OP_CONNECT_TOKEN: ${{ secrets.OP_CONNECT_TOKEN }}
+          APP_ENV: ${{ env.TAG_NAME }}
         run: |
-          echo "USERNAME=$(id -u)" >> $GITHUB_ENV
-          echo "UID=$(id -g)" >> $GITHUB_ENV
-
-      - name: Configure 1Password Connect
-
-        uses: addnab/docker-run-action@v3
-        with:
-            image: 1password/op:2
-            options: >-
-              -v ${{ github.workspace }}:/source
-              -e OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }}
-              -e OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
-              -e APP_ENV=${{ env.TAG_NAME }}
-            run: |
-              ls -l
-              cd /source
-              touch aaa.txt
-              op inject -i ./devops/vaults.env -o .env
-              cat .env
+          curl -sSfo op.zip \
+            https://cache.agilebits.com/dist/1P/op2/pkg/v2.0.0/op_linux_amd64_v2.0.0.zip \
+            && unzip -od /usr/local/bin/ op.zip \
+            && rm op.zip
+          op inject -i ./devops/vaults.env -o .env
+          cat .env
 
   bcregistry-account-cd-by-dispatch:
     runs-on: ubuntu-20.04
