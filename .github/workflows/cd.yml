@@ -37,7 +37,7 @@ jobs:
             image: 1password/op:2
             options: >-
               -v ${{ github.workspace }}:/source
-              --user $(id -u):$(id -g)
+              --user ${{id -u}}:${{id -g}}
               -e OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }}
               -e OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
               -e APP_ENV=${{ env.TAG_NAME }}
