@@ -35,7 +35,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
             image: 1password/op:2
-            options: -v ${{ github.workspace }}:/var/www \
+            options: --rm -v ${{ github.workspace }}:/var/www \
                      --user $(id -u):$(id -g)
                      -e OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }} \
                      -e OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }} \
