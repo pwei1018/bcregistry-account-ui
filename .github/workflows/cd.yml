@@ -39,6 +39,7 @@ jobs:
             run: |
               export OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }}
               export OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
+              export APP_ENV=${{ env.TAG_NAME }}
               cd /var/www
               ls -l
               op inject -i ./devops/vaults.env -o .env
