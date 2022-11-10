@@ -12,12 +12,6 @@ DOCKER_NAME:=auth-web
 setup: ## Clean and Install npm dependencies
 	npm ci
 
-create-env: ## create the configration files from dev
-	@oc get configmap $(DOCKER_NAME)-dev-keycloak-config  -n "$(OPENSHIFT_REPOSITORY)-dev" \
-		-o json | jq -r '.data["keycloak.json"]' > ./public/config/kc/keycloak.json.dev
-	@oc get configmap $(DOCKER_NAME)-dev-ui-configuration  -n "$(OPENSHIFT_REPOSITORY)-dev" \
-		-o json | jq -r '.data["configuration.json"]' > ./public/config/configuration.json.dev
-
 #################################################################################
 # COMMANDS - CI                                                                 #
 #################################################################################
@@ -66,16 +60,12 @@ push: #build ## Push the docker container to the registry & tag latest
     docker tag $(DOCKER_NAME) $(REGISTRY_IMAGE):latest ;\
     docker push $(REGISTRY_IMAGE):latest
 
-VAULTS=`cat devops/vaults.json`
-vault-env: ## Update env from 1pass
-	oc -n "$(OPS_REPOSITORY)-$(TAG_NAME)" exec "dc/vault-service-$(TAG_NAME)" -- ./scripts/1pass.sh \
-		-m "secret" \
-		-e "$(TAG_NAME)" \
-		-a "$(DOCKER_NAME)-$(TAG_NAME)" \
-		-n "$(OPENSHIFT_REPOSITORY)-$(TAG_NAME)" \
-		-v "$(VAULTS)" \
-		-r "true" \
-		-f "true"
+get-env: ## get environment variables from 1password
+	@curl -sSfo op.zip \
+            https://cache.agilebits.com/dist/1P/op2/pkg/v2.0.0/op_linux_amd64_v2.0.0.zip \
+            && unzip -od /usr/local/bin/ op.zip \
+            && rm op.zip ;\
+    op inject -i ./devops/vaults.env -o .env
 
 tag: push ## tag image
 	oc -n "$(OPENSHIFT_REPOSITORY)-tools" tag $(DOCKER_NAME):latest $(DOCKER_NAME):$(TAG_NAME)
