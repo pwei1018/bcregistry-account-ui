@@ -41,6 +41,7 @@ jobs:
               export OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
               export APP_ENV=${{ env.TAG_NAME }}
               cd /var/www
+              touch aaa.txt
               ls -l
               op inject -i ./devops/vaults.env -o .env
               cat .env
