@@ -30,6 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Get user
+        run: |
+          echo "USERNAME=$(id -u)" >> $GITHUB_ENV
+          echo "UID=$(id -g)" >> $GITHUB_ENV
+
       - name: Configure 1Password Connect
 
         uses: addnab/docker-run-action@v3
@@ -37,7 +42,7 @@ jobs:
             image: 1password/op:2
             options: >-
               -v ${{ github.workspace }}:/source
-              --user ${{id -u}}:${{id -g}}
+              --user ${{ env.USERNAME }}:${{ env.UID }}
               -e OP_CONNECT_HOST=${{ secrets.OP_CONNECT_URL }}
               -e OP_CONNECT_TOKEN=${{ secrets.OP_CONNECT_TOKEN }}
               -e APP_ENV=${{ env.TAG_NAME }}
